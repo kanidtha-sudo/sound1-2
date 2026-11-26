@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมพ้องเสียงภาษาไทย</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            color: #333;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #718096;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: #4a5568;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .game-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .game-area {
+            display: none;
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #3182ce;
+        }
+
+        /* Multi Game Styles */
+        .sentence-question {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .sentence-text {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .word-blank {
+            display: inline-block;
+            min-width: 80px;
+            height: 40px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 5px;
+            margin: 0 5px;
+            vertical-align: middle;
+            background: #f7fafc;
+        }
+
+        .word-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .word-option {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .word-option:hover {
+            background: #3182ce;
+        }
+
+        .word-option.selected {
+            background: #38a169;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #38a169;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <header class="header">
+            <h1>🎮 เกมพ้องเสียงภาษาไทย</h1>
+            <p>เลือกเกมที่คุณชอบและเริ่มเล่นกันเลย!</p>
+        </header>
+
+        <!-- Login Screen -->
+        <div id="loginScreen" style="text-align: center; margin-bottom: 30px;">
+            <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">👨‍🎓</div>
+                <h2 style="color: #4a5568; margin-bottom: 30px;">เข้าสู่ระบบ</h2>
+                <form onsubmit="login(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                    <div style="text-align: left;">
+                        <label for="studentName" style="display: block; margin-bottom: 8px; font-weight: bold; color: #4a5568;">ชื่อ-นามสกุล:</label>
+                        <input type="text" id="studentName" required style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <div style="text-align: left;">
+                        <label for="studentId" style="display: block; margin-bottom: 8px; font-weight: bold; color: #4a5568;">รหัสนักเรียน:</label>
+                        <input type="text" id="studentId" required style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: #4a5568; border: none; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: transform 0.3s ease;">
+                        เริ่มเล่นเกม
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Game Menu -->
+        <div id="gameMenu" style="text-align: center; margin-bottom: 30px; display: none;">
+            <div style="background: #f0f9ff; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <p style="margin: 0; color: #0c4a6e;">
+                    <strong>สวัสดี <span id="displayName"></span>!</strong> 
+                    <span style="margin-left: 20px;">รหัส: <span id="displayId"></span></span>
+                </p>
+            </div>
+            <button class="game-card multi" onclick="startGame('multi')" style="display: inline-block; max-width: 400px;">
+                <span class="game-icon">🎯</span>
+                <div class="game-title">เกมเติมหลายช่อง</div>
+                <div class="game-description">เติมคำพ้องเสียงในประโยคที่มี 2-3 ช่องว่าง</div>
+            </button>
+        </div>
+
+
+
+        <!-- Multi-blank Game -->
+        <div id="multiGame" class="game-area">
+            <button class="back-btn" onclick="backToMenu()">← กลับหน้าหลัก</button>
+            <h2>🎯 เกมเติมหลายช่อง</h2>
+            <div class="score">คะแนน: <span id="multiScore">0</span></div>
+            <div class="sentence-question">
+                <div class="sentence-text" id="multiText"></div>
+                <div class="word-options" id="multiOptions"></div>
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                    <button id="resetMultiBtn" class="back-btn" style="background: #f56565; display: none;" onclick="resetMultiAnswer()">รีเซ็ตคำตอบ</button>
+                    <button id="checkMultiBtn" class="back-btn" style="background: #38a169; display: none;" onclick="checkMultiAnswer()">ตรวจคำตอบ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Summary -->
+        <div id="scoreSummary" class="game-area">
+            <div style="text-align: center; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🏆</div>
+                <h2 style="color: #4a5568; margin-bottom: 30px;">สรุปผลคะแนน</h2>
+                
+                <div style="background: #f0f9ff; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <p style="margin: 0 0 10px 0; font-size: 1.2rem; color: #0c4a6e;">
+                        <strong>ชื่อ:</strong> <span id="summaryName"></span>
+                    </p>
+                    <p style="margin: 0; font-size: 1.1rem; color: #0c4a6e;">
+                        <strong>รหัสนักเรียน:</strong> <span id="summaryId"></span>
+                    </p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                    <div style="font-size: 3rem; margin-bottom: 10px;" id="scoreEmoji">🎯</div>
+                    <div style="font-size: 2.5rem; font-weight: bold; color: #4a5568; margin-bottom: 10px;">
+                        <span id="finalScore">0</span>/<span id="totalQuestions">0</span>
+                    </div>
+                    <div style="font-size: 1.3rem; color: #4a5568;" id="scorePercentage">0%</div>
+                    <div style="font-size: 1.1rem; color: #4a5568; margin-top: 10px;" id="scoreGrade">ระดับ: -</div>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="back-btn" onclick="playAgain()" style="background: #38a169;">เล่นใหม่</button>
+                    <button class="back-btn" onclick="backToLogin()" style="background: #4299e1;">เปลี่ยนผู้เล่น</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // คำพ้องเสียงสำหรับเกม
+        const homophoneData = {
+            multi: [
+                {
+                    sentence: '___จะไปตลาด ไปจ่าย___ข้าว แต่เจอแม่ค้า___แมลงสาบ',
+                    blanks: ['ข้า', 'ค่า', 'ฆ่า'],
+                    options: ['ฆ่า', 'ข้า', 'ค่า'],
+                    explanation: 'ข้า = ฉัน (ภาษาเก่า), ค่า = ราคา, ฆ่า = ทำลายชีวิต'
+                },
+                {
+                    sentence: 'นักเรียนเรียน___วิทยา แล้วไป___น้ำ ในเทศกาล___ทจีน',
+                    blanks: ['ศาสตร์', 'สาด', 'สาร์'],
+                    options: ['สาร์', 'ศาสตร์', 'สาด'],
+                    explanation: 'ศาสตร์ = วิชาความรู้, สาด = กระเซ็นน้ำ, สาร์ท = เทศกาลจีน'
+                },
+                {
+                    sentence: 'คนขับ___ไปส่งของ ระหว่างทางชิม___อาหาร แล้วไป___น้ำต้นไม้',
+                    blanks: ['รถ', 'รส', 'รด'],
+                    options: ['รด', 'รส', 'รถ'],
+                    explanation: 'รถ = ยานพาหนะ, รส = รสชาติ, รด = รดน้ำ'
+                },
+                {
+                    sentence: 'ครูให้___คณิตศาสตร์ยาก นักเรียนต้องคิด___ให้ดี ไม่ใช่___ใส่ความ',
+                    blanks: ['โจทย์', 'โจทก์', 'โจษ'],
+                    options: ['โจษ', 'โจทก์', 'โจทย์'],
+                    explanation: 'โจทย์ = ปัญหาคณิต, โจทก์ = การคิดพิจารณา, โจษ = การใส่ความ'
+                },
+                {
+                    sentence: 'ข้าราชการ___อายุ 60 ปี ได้รับ___เป็นเกียรติ มี___ดีงาม',
+                    blanks: ['เกษียณ', 'เกษียร', 'เกษียน'],
+                    options: ['เกษียน', 'เกษียณ', 'เกษียร'],
+                    explanation: 'เกษียณ = หยุดทำงาน, เกษียร = เกียรติยศ, เกษียน = ความดีงาม'
+                },
+                {
+                    sentence: 'ใน___โบราณ ดาว___มืดสนิท แสดงถึงการปฏิบัติผิดพลาด',
+                    blanks: ['กาล', 'กาฬ'],
+                    options: ['กาฬ', 'กาล'],
+                    explanation: 'กาล = เวลา, กาฬ = ความมืด/ความชั่วร้าย'
+                },
+                {
+                    sentence: 'พระสงฆ์ใช้___ทำบุญ ในวัน___เพ็ญ ด้วยไม้___หอม',
+                    blanks: ['จัน', 'จันทร์', 'จันทน์'],
+                    options: ['จันทน์', 'จัน', 'จันทร์'],
+                    explanation: 'จัน = ภาชนะใส่อาหาร, จันทร์ = ดวงจันทร์, จันทน์ = ไม้หอม'
+                },
+                {
+                    sentence: 'ใน___มืดมิด ดาว___ส่องแสง ตั้งแต่___โบราณ',
+                    blanks: ['กาฬ', 'กานต์', 'กาล'],
+                    options: ['กาล', 'กาฬ', 'กานต์'],
+                    explanation: 'กาฬ = ความมืด, กานต์ = ดาวฤกษ์, กาล = เวลา'
+                },
+
+                {
+                    sentence: 'เหรียญ___ไทย ถูกใบมีด___เป็นแผล ใส่___ข้าวสวย',
+                    blanks: ['บาท', 'บาด', 'บาตร'],
+                    options: ['บาตร', 'บาท', 'บาด'],
+                    explanation: 'บาท = หน่วยเงิน, บาด = แผลจากของมีคม, บาตร = ภาชนะใส่ข้าว'
+                },
+                {
+                    sentence: 'พระสงฆ์ถือ___รับ___อาหาร ไม่ใช่ใบ___ค่าไฟฟ้า',
+                    blanks: ['บิณฑ์', 'บิณฑบาต', 'บิล'],
+                    options: ['บิล', 'บิณฑ์', 'บิณฑบาต'],
+                    explanation: 'บิณฑ์ = ภาชนะของพระ, บิณฑบาต = การขออาหาร, บิล = ใบเรียกเก็บเงิน'
+                },
+                {
+                    sentence: 'นกจะ___บนฟ้า ใส่___ข้าวสวย ไม่ใช่ใบ___ค่าไฟฟ้า',
+                    blanks: ['บิน', 'บิณฑ์', 'บิล'],
+                    options: ['บิล', 'บิน', 'บิณฑ์'],
+                    explanation: 'บิน = บินบนอากาศ, บิณฑ์ = ภาชนะของพระ, บิล = ใบเรียกเก็บเงิน'
+                },
+                {
+                    sentence: 'ดู___หน้าตา ___การเมืองต้อง___ผ่อน',
+                    blanks: ['พักตร์', 'พรรค', 'พัก'],
+                    options: ['พัก', 'พักตร์', 'พรรค'],
+                    explanation: 'พักตร์ = หน้าตา, พรรค = กลุ่มการเมือง, พัก = หยุดพัก'
+                }
+            ]
+        };
+
+        let currentGame = '';
+        let gameState = {};
+        let studentInfo = {};
+
+        function login(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('studentName').value.trim();
+            const id = document.getElementById('studentId').value.trim();
+            
+            if (name && id) {
+                studentInfo = { name, id };
+                
+                // แสดงข้อมูลนักเรียน
+                document.getElementById('displayName').textContent = name;
+                document.getElementById('displayId').textContent = id;
+                
+                // ซ่อนหน้า login และแสดงเมนูเกม
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('gameMenu').style.display = 'block';
+            }
+        }
+
+        function startGame(gameType) {
+            currentGame = gameType;
+            document.getElementById('gameMenu').style.display = 'none';
+            document.getElementById(gameType + 'Game').style.display = 'block';
+            initMultiGame();
+        }
+
+        function backToMenu() {
+            document.querySelectorAll('.game-area').forEach(area => {
+                area.style.display = 'none';
+            });
+            document.getElementById('gameMenu').style.display = 'block';
+            gameState = {};
+        }
+
+        function backToLogin() {
+            document.querySelectorAll('.game-area').forEach(area => {
+                area.style.display = 'none';
+            });
+            document.getElementById('gameMenu').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            
+            // ล้างข้อมูล
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentId').value = '';
+            studentInfo = {};
+            gameState = {};
+        }
+
+        function playAgain() {
+            document.getElementById('scoreSummary').style.display = 'none';
+            document.getElementById('gameMenu').style.display = 'block';
+            gameState = {};
+        }
+
+        function showScoreSummary() {
+            const totalQuestions = gameState.multiData.length;
+            const score = gameState.multiScore;
+            const percentage = Math.round((score / totalQuestions) * 100);
+            
+            // คำนวณคะแนนตามเกณฑ์ใหม่
+            let finalGrade, emoji;
+            if (score >= 10) {
+                finalGrade = 5;
+                emoji = '🏆';
+            } else if (score >= 8) {
+                finalGrade = 4;
+                emoji = '🥇';
+            } else if (score >= 6) {
+                finalGrade = 3;
+                emoji = '🥈';
+            } else if (score >= 4) {
+                finalGrade = 2;
+                emoji = '🥉';
+            } else if (score >= 2) {
+                finalGrade = 1;
+                emoji = '📚';
+            } else {
+                finalGrade = 0;
+                emoji = '💪';
+            }
+            
+            // แสดงข้อมูลนักเรียน
+            document.getElementById('summaryName').textContent = studentInfo.name;
+            document.getElementById('summaryId').textContent = studentInfo.id;
+            
+            // แสดงคะแนน
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('scorePercentage').textContent = percentage + '%';
+            document.getElementById('scoreGrade').textContent = 'คะแนน: ' + finalGrade + '/5';
+            document.getElementById('scoreEmoji').textContent = emoji;
+            
+            // ซ่อนเกมและแสดงสรุปคะแนน
+            document.getElementById('multiGame').style.display = 'none';
+            document.getElementById('scoreSummary').style.display = 'block';
+        }
+
+        // Multi-blank Game
+        function initMultiGame() {
+            gameState.multiScore = 0;
+            gameState.currentMultiIndex = 0;
+            gameState.multiData = [...homophoneData.multi].sort(() => Math.random() - 0.5);
+            gameState.selectedWords = [];
+            showMultiQuestion();
+        }
+
+        function showMultiQuestion() {
+            if (gameState.currentMultiIndex >= gameState.multiData.length) {
+                setTimeout(() => {
+                    showScoreSummary();
+                }, 500);
+                return;
+            }
+            
+            const question = gameState.multiData[gameState.currentMultiIndex];
+            gameState.selectedWords = [];
+            
+            // สร้างประโยคที่มีช่องว่าง
+            let sentenceWithBlanks = question.sentence;
+            question.blanks.forEach((blank, index) => {
+                sentenceWithBlanks = sentenceWithBlanks.replace('___', 
+                    `<span class="word-blank" id="blank${index}" onclick="clearBlank(${index})"></span>`);
+            });
+            
+            document.getElementById('multiText').innerHTML = sentenceWithBlanks;
+            document.getElementById('multiScore').textContent = gameState.multiScore;
+            
+            // สร้างตัวเลือก
+            const optionsContainer = document.getElementById('multiOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'word-option';
+                button.textContent = option;
+                button.onclick = () => selectMultiWord(option, button);
+                optionsContainer.appendChild(button);
+            });
+            
+            document.getElementById('checkMultiBtn').style.display = 'none';
+            document.getElementById('resetMultiBtn').style.display = 'none';
+        }
+
+        function selectMultiWord(word, button) {
+            const question = gameState.multiData[gameState.currentMultiIndex];
+            
+            // หาช่องว่างที่ยังไม่ได้เติม
+            let emptyBlankIndex = -1;
+            for (let i = 0; i < question.blanks.length; i++) {
+                const blank = document.getElementById(`blank${i}`);
+                if (!blank.textContent) {
+                    emptyBlankIndex = i;
+                    break;
+                }
+            }
+            
+            if (emptyBlankIndex !== -1) {
+                const blank = document.getElementById(`blank${emptyBlankIndex}`);
+                blank.textContent = word;
+                blank.style.background = '#e2e8f0';
+                blank.style.borderColor = '#4299e1';
+                
+                gameState.selectedWords[emptyBlankIndex] = word;
+                button.style.opacity = '0.5';
+                button.style.pointerEvents = 'none';
+                
+                // ตรวจสอบว่าเติมครบทุกช่องแล้วหรือไม่
+                const filledCount = gameState.selectedWords.filter(w => w).length;
+                if (filledCount > 0) {
+                    document.getElementById('resetMultiBtn').style.display = 'block';
+                }
+                if (filledCount === question.blanks.length) {
+                    document.getElementById('checkMultiBtn').style.display = 'block';
+                }
+            }
+        }
+
+        function clearBlank(index) {
+            const blank = document.getElementById(`blank${index}`);
+            const word = blank.textContent;
+            
+            if (word) {
+                blank.textContent = '';
+                blank.style.background = '#f7fafc';
+                blank.style.borderColor = '#cbd5e0';
+                
+                gameState.selectedWords[index] = null;
+                
+                // เปิดใช้งานปุ่มคำนั้นอีกครั้ง
+                const buttons = document.querySelectorAll('.word-option');
+                buttons.forEach(button => {
+                    if (button.textContent === word) {
+                        button.style.opacity = '1';
+                        button.style.pointerEvents = 'auto';
+                    }
+                });
+                
+                // ตรวจสอบว่ายังมีคำที่เติมอยู่หรือไม่
+                const remainingCount = gameState.selectedWords.filter(w => w).length;
+                if (remainingCount === 0) {
+                    document.getElementById('resetMultiBtn').style.display = 'none';
+                }
+                document.getElementById('checkMultiBtn').style.display = 'none';
+            document.getElementById('resetMultiBtn').style.display = 'none';
+            }
+        }
+
+        function resetMultiAnswer() {
+            const question = gameState.multiData[gameState.currentMultiIndex];
+            
+            // ล้างคำตอบทั้งหมด
+            question.blanks.forEach((blank, index) => {
+                const blankElement = document.getElementById(`blank${index}`);
+                blankElement.textContent = '';
+                blankElement.style.background = '#f7fafc';
+                blankElement.style.borderColor = '#cbd5e0';
+            });
+            
+            // รีเซ็ตสถานะ
+            gameState.selectedWords = [];
+            
+            // เปิดใช้งานปุ่มทั้งหมดอีกครั้ง
+            const buttons = document.querySelectorAll('#multiOptions .word-option');
+            buttons.forEach(button => {
+                button.style.opacity = '1';
+                button.style.pointerEvents = 'auto';
+            });
+            
+            // ซ่อนปุ่ม
+            document.getElementById('resetMultiBtn').style.display = 'none';
+            document.getElementById('checkMultiBtn').style.display = 'none';
+        }
+
+        function checkMultiAnswer() {
+            const question = gameState.multiData[gameState.currentMultiIndex];
+            let isCorrect = true;
+            
+            // ตรวจสอบคำตอบแต่ละช่อง
+            question.blanks.forEach((correctWord, index) => {
+                const blank = document.getElementById(`blank${index}`);
+                const selectedWord = gameState.selectedWords[index];
+                
+                if (selectedWord === correctWord) {
+                    blank.style.background = '#c6f6d5';
+                    blank.style.borderColor = '#38a169';
+                } else {
+                    blank.style.background = '#fed7d7';
+                    blank.style.borderColor = '#e53e3e';
+                    isCorrect = false;
+                }
+            });
+            
+            if (isCorrect) {
+                gameState.multiScore++;
+            }
+            
+            // แสดงคำอธิบาย
+            const explanationDiv = document.createElement('div');
+            explanationDiv.style.cssText = `
+                background: #f0f9ff;
+                border: 2px solid #0ea5e9;
+                border-radius: 8px;
+                padding: 15px;
+                margin-top: 15px;
+                font-size: 0.9rem;
+                color: #0c4a6e;
+            `;
+            explanationDiv.innerHTML = `<strong>คำอธิบาย:</strong> ${question.explanation}`;
+            
+            document.querySelector('#multiGame .sentence-question').appendChild(explanationDiv);
+            
+            setTimeout(() => {
+                explanationDiv.remove();
+                gameState.currentMultiIndex++;
+                showMultiQuestion();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'995eba7bf197894f',t:'MTc2MTY5OTU0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
